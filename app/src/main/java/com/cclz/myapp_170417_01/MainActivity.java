@@ -3,6 +3,8 @@ package com.cclz.myapp_170417_01;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,7 +21,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
    /* volley
        1. 建立一個 queue
        2. 建立一個 request ( a. 成功了怎麼辦  b. 失敗了怎麼辦)
@@ -30,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
        [] 陣列
        {} 物件
     */
+
+    ListView lv;
+    ArrayAdapter<String> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        lv = (ListView) findViewById(R.id.listView);
         RequestQueue queue= Volley.newRequestQueue(MainActivity.this);
         final StringRequest request=new StringRequest("http://data.ntpc.gov.tw/od/data/api/BF90FA7E-C358-4CDA-B579-B6C84ADC96A1?$format=json",
                 new Response.Listener<String>() {
@@ -51,9 +56,13 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                             Gson gson=new Gson();
                             ArrayList<Animal> mylist=gson.fromJson(response, new TypeToken<ArrayList<Animal>>() {}.getType());
+                            ArrayList<String> strlist = new ArrayList<>();
                             for(Animal a:mylist){
                                 Log.d("NET", a.district);
+                                strlist.add(a.district);
                             }
+                            adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, strlist);
+                            lv.setAdapter(adapter);
                         }
                     }
                 }, new Response.ErrorListener() {
